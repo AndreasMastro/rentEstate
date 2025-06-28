@@ -19,6 +19,6 @@ RUN chown appuser /app/application.jar
 
 USER appuser
 
-EXPOSE 8080
+EXPOSE 8081
 
 ENTRYPOINT ["java","-jar","application.jar"]
