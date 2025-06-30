@@ -2,7 +2,6 @@ services:
   db:
     image: postgres:16
     restart: always
-    #not needed
     expose:
       - 5432
     ports:
@@ -20,6 +19,25 @@ services:
       retries: 3
     volumes:
       - 'rentestate_db:/var/lib/postgresql/data/'
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    restart: always
+    ports:
+      - "1025:1025"  
+      - "8025:8025"  
+    environment:
+      - MH_STORAGE=maildir
+      - MH_MAILDIR_PATH=/maildir
+    volumes:
+      - mailhog_data:/maildir
+    user: root
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8025"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
   spring:
     image: sp
     restart: always
@@ -31,20 +49,25 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      mailhog:
+        condition: service_healthy
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/mydb
       - SPRING_DATASOURCE_USERNAME=myuser
       - SPRING_DATASOURCE_PASSWORD=pass12345
+      
+      - SPRING_MAIL_HOST=mailhog
+      - SPRING_MAIL_PORT=1025
+      - SPRING_MAIL_USERNAME=
+      - SPRING_MAIL_PASSWORD=
+      - SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH=false
+      - SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE=false
     healthcheck:
       test: ["CMD","curl","-f","http://localhost:8081/actuator/health"]
       interval: 30s
       timeout: 30s
       retries: 3
 
-
-
-
 volumes:
   rentestate_db:
-
-
+  mailhog_data:  

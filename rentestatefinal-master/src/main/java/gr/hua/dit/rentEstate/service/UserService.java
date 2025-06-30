@@ -23,18 +23,22 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository; // Repository for User data
     private final RoleRepository roleRepository; // Repository for Role data
     private final BCryptPasswordEncoder passwordEncoder; // Encoder for securely hashing passwords
+    private final EmailService emailService; // Email service for sending emails
 
     //Constructor for dependency
-    public UserService(UserRepository userRepository, RoleRepository roleRepository, BCryptPasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, RoleRepository roleRepository,
+                       BCryptPasswordEncoder passwordEncoder, EmailService emailService) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
     }
 
     //Save or update a User entity.
     @Transactional
     public Integer saveUser(User user) {
         Optional<User> existingUser = userRepository.findById(user.getId()); // Check if the user exists
+        boolean isNewUser = existingUser.isEmpty(); // Flag to check if this is a new user
 
         if (existingUser.isPresent()) {
             if (!passwordEncoder.matches(user.getPassword(), existingUser.get().getPassword())) {
@@ -54,6 +58,17 @@ public class UserService implements UserDetailsService {
         }
 
         user = userRepository.save(user); // Save user to the repository
+
+        // Send welcome email only for new users
+        if (isNewUser) {
+            try {
+                emailService.sendWelcomeEmail(user.getEmail(), user.getUsername());
+            } catch (Exception e) {
+                // Log the error but don't fail the registration process
+                System.err.println("Failed to send welcome email to " + user.getEmail() + ": " + e.getMessage());
+            }
+        }
+
         return user.getId();
     }
 
@@ -119,5 +134,4 @@ public class UserService implements UserDetailsService {
     public void deleteUser(Long userId) {
         userRepository.deleteById(userId);
     }
-
 }
