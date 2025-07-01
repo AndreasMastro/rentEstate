@@ -53,7 +53,7 @@ pipeline {
             steps {
                 script {
                     sh """
-                        ansible all -i ${ANSIBLE_INVENTORY} -m ping
+                        ansible all -i ${ANSIBLE_INVENTORY} -m ping appservers,dbservers
                     """
                 }
             }
