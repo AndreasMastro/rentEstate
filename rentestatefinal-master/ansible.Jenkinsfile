@@ -21,7 +21,7 @@ pipeline {
                     $class: 'GitSCM',
                     branches: [[name: '*/main']],
                     userRemoteConfigs: [[
-                        url: 'https://github.com/AndreasMastro/rentEstate/tree/main/rentestatefinal-master'
+                        url: 'https://github.com/AndreasMastro/rentEstate.git'
                     ]]
                 ])
             }
@@ -29,12 +29,12 @@ pipeline {
 
         stage('Checkout Ansible Code') {
             steps {
-                dir('ansible-devops-2025') {
+                dir('ansible') {
                     checkout([
                         $class: 'GitSCM',
                         branches: [[name: '*/main']],
                         userRemoteConfigs: [[
-                            url: 'https://github.com/AndreasMastro/ansible/tree/main/ansible-devops-2025'  
+                            url: 'https://github.com/AndreasMastro/ansible.git'  
                         ]]
                     ])
                 }
@@ -78,12 +78,12 @@ pipeline {
             }
             steps {
                 script {
-                    dir('.') {
+                    dir('rentestatefinal-master') {
                         sh 'mvn clean package -DskipTests'
                     }
                     sh """
                         ansible-playbook -i ${ANSIBLE_INVENTORY} -l appservers ${ANSIBLE_PLAYBOOKS}/spring.yaml \
-                            -e "app_jar_path=${WORKSPACE}/target/rentEstate-0.0.1-SNAPSHOT.jar"
+                            -e "app_jar_path=${WORKSPACE}/rentestatefinal-master/target/rentEstate-0.0.1-SNAPSHOT.jar"
                     """
                 }
             }
