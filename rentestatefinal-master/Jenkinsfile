@@ -3,15 +3,15 @@ pipeline {
 
     environment {
         DOCKER_TOKEN = credentials('docker-push-secret')
-        DOCKER_USER = 'AndreasMastro'
+        DOCKER_USER = 'andreasmastro'  
         DOCKER_SERVER = 'ghcr.io'
-        DOCKER_PREFIX = 'ghcr.io/AndreasMastro/rentEstate'
+        DOCKER_PREFIX = 'ghcr.io/andreasmastro/rentestate'  
         PROJECT_DIR = 'rentestatefinal-master'
     }
 
     tools {
-        maven 'Maven 3.9.6'  // This should match the Maven installation name in Jenkins
-        jdk 'jdk-21'         // This should match the JDK installation name in Jenkins
+        maven 'Maven 3.9.6'  
+        jdk 'jdk-21'         
     }
 
     stages {
@@ -24,7 +24,7 @@ pipeline {
         stage('Test') {
             steps {
                 dir(env.PROJECT_DIR) {
-                    // Use Maven directly instead of the wrapper
+
                     sh 'mvn clean test'
                 }
             }
