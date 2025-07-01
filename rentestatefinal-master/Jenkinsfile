@@ -6,10 +6,10 @@ pipeline {
         DOCKER_USER = 'AndreasMastro'
         DOCKER_SERVER = 'ghcr.io'
         DOCKER_PREFIX = 'ghcr.io/AndreasMastro/rentEstate'
+        PROJECT_DIR = 'rentestatefinal-master'
     }
 
     tools {
-        // Make sure to configure Maven in Jenkins Global Tool Configuration
         maven 'Maven 3.9.6'
         jdk 'jdk-21'
     }
@@ -18,15 +18,17 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout scm
-                // Make mvnw executable
-                sh 'chmod +x mvnw'
+                dir(env.PROJECT_DIR) {
+                    sh 'chmod +x mvnw'
+                }
             }
         }
 
         stage('Test') {
             steps {
-                // Use the full path to mvnw
-                sh './mvnw clean test'
+                dir(env.PROJECT_DIR) {
+                    sh './mvnw clean test'
+                }
             }
         }
 
@@ -34,35 +36,36 @@ pipeline {
             steps {
                 script {
                     def tag = "${env.BUILD_NUMBER}"
-
-                    // Ensure Docker is available
-                    sh 'docker --version'
-
-                    // Build the Docker image
-                    sh """
-                        docker build \
-                            --rm \
-                            -t ${DOCKER_PREFIX}:${tag} \
-                            -t ${DOCKER_PREFIX}:latest \
-                            -f nonroot-multistage.Dockerfile .
-                    """
-
-                    // Login and push
-                    withCredentials([string(credentialsId: 'docker-push-secret', variable: 'DOCKER_TOKEN')]) {
+                    
+                    dir(env.PROJECT_DIR) {
+                        // Ensure Docker is available
+                        sh 'docker --version'
+                        
+                        // Build the Docker image
                         sh """
-                            echo $DOCKER_TOKEN | docker login ${DOCKER_SERVER} -u ${DOCKER_USER} --password-stdin
-                            docker push ${DOCKER_PREFIX}:${tag}
-                            docker push ${DOCKER_PREFIX}:latest
+                            docker build \
+                                --rm \
+                                -t ${DOCKER_PREFIX}:${tag} \
+                                -t ${DOCKER_PREFIX}:latest \
+                                -f nonroot-multistage.Dockerfile .
                         """
+                        
+                        // Login and push
+                        withCredentials([string(credentialsId: 'docker-push-secret', variable: 'DOCKER_TOKEN')]) {
+                            sh """
+                                echo $DOCKER_TOKEN | docker login ${DOCKER_SERVER} -u ${DOCKER_USER} --password-stdin
+                                docker push ${DOCKER_PREFIX}:${tag}
+                                docker push ${DOCKER_PREFIX}:latest
+                            """
+                        }
                     }
                 }
             }
         }
     }
-
+    
     post {
         always {
-            // Clean up workspace
             cleanWs()
         }
     }
