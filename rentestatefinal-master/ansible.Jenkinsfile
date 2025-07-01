@@ -7,8 +7,10 @@ pipeline {
     }
 
     environment {
-        ANSIBLE_CONFIG = "${WORKSPACE}/ansible-devops-2025/ansible.cfg"
-        ANSIBLE_INVENTORY = "${WORKSPACE}/ansible-devops-2025/hosts.yaml"
+        // Updated paths to match your actual Ansible project structure
+        ANSIBLE_CONFIG = "${WORKSPACE}/ansible-job/ansible-devops-2025/ansible.cfg"
+        ANSIBLE_INVENTORY = "${WORKSPACE}/ansible-job/ansible-devops-2025/hosts.yaml"
+        ANSIBLE_PLAYBOOKS = "${WORKSPACE}/ansible-job/ansible-devops-2025/playbooks"
     }
 
     stages {
@@ -21,6 +23,8 @@ pipeline {
         stage('Verify Ansible Installation') {
             steps {
                 sh 'ansible --version'
+                // List workspace to verify paths
+                sh 'ls -la ${WORKSPACE}'
             }
         }
 
@@ -41,7 +45,7 @@ pipeline {
             steps {
                 script {
                     sh """
-                        ansible-playbook -i ${ANSIBLE_INVENTORY} -l dbservers ${WORKSPACE}/ansible-devops-2025/playbooks/postgres-16.yaml
+                        ansible-playbook -i ${ANSIBLE_INVENTORY} -l dbservers ${ANSIBLE_PLAYBOOKS}/postgres-16.yaml
                     """
                 }
             }
@@ -60,7 +64,7 @@ pipeline {
                     
                     // Then deploy using Ansible
                     sh """
-                        ansible-playbook -i ${ANSIBLE_INVENTORY} -l appservers ${WORKSPACE}/ansible-devops-2025/playbooks/spring.yaml \
+                        ansible-playbook -i ${ANSIBLE_INVENTORY} -l appservers ${ANSIBLE_PLAYBOOKS}/spring.yaml \
                             -e "app_jar_path=${WORKSPACE}/target/rentEstate-0.0.1-SNAPSHOT.jar"
                     """
                 }
@@ -70,11 +74,9 @@ pipeline {
 
     post {
         always {
-            // Clean up workspace after build
             cleanWs()
         }
         failure {
-            // Send notification on failure
             echo 'Pipeline failed!'
         }
     }
