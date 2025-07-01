@@ -8,10 +8,10 @@ pipeline {
 
     environment {
         // Paths relative to workspace
-        ANSIBLE_DIR = "${WORKSPACE}/ansible-devops-2025"
-        ANSIBLE_CONFIG = "${WORKSPACE}/ansible-devops-2025/ansible.cfg"
-        ANSIBLE_INVENTORY = "${WORKSPACE}/ansible-devops-2025/hosts.yaml"
-        ANSIBLE_PLAYBOOKS = "${WORKSPACE}/ansible-devops-2025/playbooks"
+        ANSIBLE_DIR = "${WORKSPACE}/ansible-job/ansible-devops-2025"
+        ANSIBLE_CONFIG = "${WORKSPACE}/ansible-job/ansible-devops-2025/ansible.cfg"
+        ANSIBLE_INVENTORY = "${WORKSPACE}/ansible-job/ansible-devops-2025/hosts.yaml"
+        ANSIBLE_PLAYBOOKS = "${WORKSPACE}/ansible-job/ansible-devops-2025/playbooks"
     }
 
     stages {
