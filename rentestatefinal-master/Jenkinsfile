@@ -1,0 +1,47 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_TOKEN = credentials('docker-push-secret')
+        DOCKER_USER = 'AndreasMastro'
+        DOCKER_SERVER = 'ghcr.io'
+        DOCKER_PREFIX = 'ghcr.io/AndreasMastro/rentEstate'
+    }
+
+    stages {
+        stage('Test') {
+            steps {
+                sh '''
+                    echo "Running tests..."
+                    ./mvnw clean test
+                '''
+            }
+        }
+
+        stage('Build and Push Docker Image') {
+            steps {
+                script {
+                    def tag = "${env.BUILD_NUMBER}"
+                    
+                    // Build the Docker image
+                    sh """
+                        docker build \
+                            --rm \
+                            -t ${DOCKER_PREFIX}:${tag} \
+                            -t ${DOCKER_PREFIX}:latest \
+                            -f nonroot-multistage.Dockerfile .
+                    """
+                    
+                    // Login and push
+                    withCredentials([string(credentialsId: 'docker-push-secret', variable: 'DOCKER_TOKEN')]) {
+                        sh """
+                            echo $DOCKER_TOKEN | docker login ${DOCKER_SERVER} -u ${DOCKER_USER} --password-stdin
+                            docker push ${DOCKER_PREFIX}:${tag}
+                            docker push ${DOCKER_PREFIX}:latest
+                        """
+                    }
+                }
+            }
+        }
+    }
+}
