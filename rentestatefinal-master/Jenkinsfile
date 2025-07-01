@@ -10,24 +10,22 @@ pipeline {
     }
 
     tools {
-        maven 'Maven 3.9.6'
-        jdk 'jdk-21'
+        maven 'Maven 3.9.6'  // This should match the Maven installation name in Jenkins
+        jdk 'jdk-21'         // This should match the JDK installation name in Jenkins
     }
 
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
-                dir(env.PROJECT_DIR) {
-                    sh 'chmod +x mvnw'
-                }
             }
         }
 
         stage('Test') {
             steps {
                 dir(env.PROJECT_DIR) {
-                    sh './mvnw clean test'
+                    // Use Maven directly instead of the wrapper
+                    sh 'mvn clean test'
                 }
             }
         }
