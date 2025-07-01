@@ -7,24 +7,45 @@ pipeline {
     }
 
     environment {
-        // Updated paths to match your actual Ansible project structure
-        ANSIBLE_CONFIG = "${WORKSPACE}/ansible-job/ansible-devops-2025/ansible.cfg"
-        ANSIBLE_INVENTORY = "${WORKSPACE}/ansible-job/ansible-devops-2025/hosts.yaml"
-        ANSIBLE_PLAYBOOKS = "${WORKSPACE}/ansible-job/ansible-devops-2025/playbooks"
+        // Paths relative to workspace
+        ANSIBLE_DIR = "${WORKSPACE}/ansible-devops-2025"
+        ANSIBLE_CONFIG = "${WORKSPACE}/ansible-devops-2025/ansible.cfg"
+        ANSIBLE_INVENTORY = "${WORKSPACE}/ansible-devops-2025/hosts.yaml"
+        ANSIBLE_PLAYBOOKS = "${WORKSPACE}/ansible-devops-2025/playbooks"
     }
 
     stages {
-        stage('Checkout SCM') {
+        stage('Checkout Application Code') {
             steps {
-                checkout scm
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/main']],
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/AndreasMastro/rentEstate/tree/main/rentestatefinal-master'
+                    ]]
+                ])
             }
         }
 
-        stage('Verify Ansible Installation') {
+        stage('Checkout Ansible Code') {
+            steps {
+                dir('ansible-devops-2025') {
+                    checkout([
+                        $class: 'GitSCM',
+                        branches: [[name: '*/main']],
+                        userRemoteConfigs: [[
+                            url: 'https://github.com/AndreasMastro/ansible/tree/main/ansible-devops-2025'  
+                        ]]
+                    ])
+                }
+            }
+        }
+
+        stage('Verify Setup') {
             steps {
                 sh 'ansible --version'
-                // List workspace to verify paths
                 sh 'ls -la ${WORKSPACE}'
+                sh 'ls -la ${ANSIBLE_DIR}'
             }
         }
 
@@ -57,12 +78,9 @@ pipeline {
             }
             steps {
                 script {
-                    // First build the application
                     dir('.') {
                         sh 'mvn clean package -DskipTests'
                     }
-                    
-                    // Then deploy using Ansible
                     sh """
                         ansible-playbook -i ${ANSIBLE_INVENTORY} -l appservers ${ANSIBLE_PLAYBOOKS}/spring.yaml \
                             -e "app_jar_path=${WORKSPACE}/target/rentEstate-0.0.1-SNAPSHOT.jar"
