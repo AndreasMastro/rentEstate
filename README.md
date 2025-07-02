@@ -2,13 +2,10 @@
 
 Για την υλοποίηση χρησιμοποιήσαμε JAVA 21
 
-Ομάδα 5 :
-
-Ιουλιανός Πολύζος 2022091
-
-Χρήστος Λάμπρου 2022052
-
+Ομάδα 32 :
 Ανδρέας Μαστρογιαννόπουλος 2022064
+Θεοχάρης Τριάντης 2022104
+
 Αυτή η εργασία αποτελεί μια υλοποίηση ενός συστήματος διαχείρισης ακινήτων.
 
 Entities
@@ -45,7 +42,7 @@ RentRepository
 
 
 Services
-
+EmailService
 UserService
 OwnerService
 EstateService
@@ -64,28 +61,3 @@ tenant
 page_layout
 index
 
-
-Για να τρέξουμε την εργασία ακολουθούμε τα εξής βήματα
-
-1.Εκτελούμε την εντολή : git clone https://gitlab.hua.gr/it2022052/rentestatefinal.git
-
-
-ή κατεβάζουμε το project από το Git Repository Link :
-
-Git Repository Link :https://gitlab.hua.gr/it2022052/rentestatefinal
-
-
-2.Ανοίγουμε ένα IDE και κάνουμε κλικ "Open" για να ανοίξουμε το project
-
-3.Eπιλέγουμε το project
-
-4.Όταν φορτωθεί  το project στο IDE , κάνουμε κλικ στο κουμπί "Run" μέσα από το IDE
-
-5.Περιμένουμε λίγο ώστε να "αρχίσει" η εφαρμογή
-
-6.Ανοίγουμε ένα browser
-
-7.Πληκτρολογούμε τη διεύθυνση : http://localhost:8080/
-
-
-8.Η εφαρμογή είναι έτοιμη για χρήση
