@@ -8,7 +8,7 @@
 
 Αυτή η εργασία αποτελεί μια υλοποίηση ενός συστήματος διαχείρισης ακινήτων.
 
-Entities
+Entities:
 
 User
 Owner
@@ -18,7 +18,7 @@ Role
 Rent
 
 
-Controllers
+Controllers:
 
 UserController
 OwnerController
@@ -31,7 +31,7 @@ MyErrorController
 AdminController
 
 
-Repositories
+Repositories:
 
 UserRepository
 OwnerRepository
@@ -41,7 +41,7 @@ TenantRepository
 RentRepository
 
 
-Services
+Services:
 EmailService
 UserService
 OwnerService
@@ -50,7 +50,7 @@ TenantService
 RentService
 
 
-Templates and Template Directories
+Templates and Template Directories:
 
 admin
 auth
