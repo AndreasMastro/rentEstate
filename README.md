@@ -5,6 +5,7 @@
 Ομάδα 32 :
 Ανδρέας Μαστρογιαννόπουλος 2022064
 Θεοχάρης Τριάντης 2022104
+
 Jenkins Credentials: Username: admin1
                      Password: admin1
 
